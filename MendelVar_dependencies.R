@@ -1,0 +1,7 @@
+library(devtools)
+install_version("hash", version = "2.2.6.1", repos = "http://cran.us.r-project.org")
+install_version("ontologyIndex", version = "2.5", repos = "http://cran.us.r-project.org")
+#install_version("ggplot2", version = "3.2.1", repos = "http://cran.us.r-project.org")
+install_version("stringr", version = "1.4.0", repos = "http://cran.us.r-project.org")
+install_version("scales", version = "1.1.0", repos = "http://cran.us.r-project.org")
+install_version("viridis", version = "0.5.1", repos = "http://cran.us.r-project.org")
