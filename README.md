@@ -22,3 +22,6 @@ Manual changes required (see lines 13, 30, 33 in the script)
 sh ./user_input/1_run_user_input.sh
 ```
 Manual changes required (see line 15 in the script)
+
+## MendelVar tutorial
+https://www.notion.so/MendelVar-tutorial-ab91d2a6acb846f2b9f2978fcd942dd5
