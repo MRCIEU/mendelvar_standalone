@@ -292,7 +292,7 @@ def run_liftover(sorted_file, logging, final_in_file, chain_file):
             logging.write(unmapped_all)
             unmapped_h.close()
             logging.write("*** End of unmapped positions.\n")  
-            return final_in_file     
+            return final_in_file, logging     
         else:
             logging.write("We encountered a problem converting from hg38 to hg19 coordinates. Exiting.\n")
             raise Exception("We encountered a problem converting from hg38 to hg19 coordinates. Exiting.")
