@@ -9,6 +9,8 @@
 
 [https://vcftools.github.io/](https://vcftools.github.io/)
 
+The liftOVer chain mapping files (hg19ToHg38.over.chain & hg38ToHg19.over.chain) need to be placed in the following directory: `$HOME/bin/liftover`
+
 ## Install packages in the conda environment, activate, add to PATH
 Needs personalising the `name` and `prefix` in the environment.yml file
 ```
