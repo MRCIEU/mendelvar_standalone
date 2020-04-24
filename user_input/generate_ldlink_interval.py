@@ -151,7 +151,7 @@ def create_final_input2(results, logging, final_input_file, my_pars):
         home = os.environ["HOME"]
         chain_file = str(home) + "/bin/liftover/hg19ToHg38.over.chain"
         logging.write("INFO: Converting the single variants from hg19 to hg38 coordinates with UCSC liftOver tool.\n")
-        final_in_file = run_liftover(final_input_file, logging, final_input_file, chain_file)
+        final_in_file, logging = run_liftover(final_input_file, logging, final_input_file, chain_file)
         num_lines = sum(1 for line in open(final_in_file))
         if num_lines > 0:
             pass
