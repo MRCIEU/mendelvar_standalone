@@ -13,7 +13,6 @@ curl https://data.omim.org/downloads/apiKey/genemap2.txt -o genemap2.txt
 curl https://data.omim.org/downloads/apiKey/mimTitles.txt -o mimTitles.txt
 curl https://data.omim.org/downloads/apiKey/morbidmap.txt -o morbidmap.txt
 
-#To be run just once to highlight potential targets for populating the omim database.
 #This produces a file where each described phenotype, even if it is mapped to the same phenotype,
 #is given a separate line.
 python $scripts/parse_genemap.py genemap2.txt >genemap_parsed_master.txt
