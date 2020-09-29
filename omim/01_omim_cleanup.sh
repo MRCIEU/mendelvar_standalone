@@ -18,6 +18,10 @@ curl https://data.omim.org/downloads/apiKey/genemap2.txt -o genemap2.txt
 curl https://data.omim.org/downloads/apiKey/mimTitles.txt -o mimTitles.txt
 curl https://data.omim.org/downloads/apiKey/morbidmap.txt -o morbidmap.txt
 
+#This produces a file where each described phenotype, even if it is mapped to the same phenotype,
+#is given a separate line.
+python $scripts/parse_genemap.py genemap2.txt >genemap_parsed_master.txt
+
 #Download the Update List for a given month - change. Save as the "latest.html" file
 wget https://www.omim.org/statistics/updates/2020/03 -O latest.html
 #Apply the monthly update:
