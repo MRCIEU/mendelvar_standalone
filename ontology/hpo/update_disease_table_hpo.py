@@ -13,11 +13,11 @@ decipher_data = dict()
 seen_header = 0
 with open(hpo, 'r') as hpo_h:
     for line in hpo_h:
-        if line.startswith("#"):
-            pass
-        elif seen_header == 0:
+        if line.startswith("#DatabaseID"):
             headers = line.strip().split("\t")
             seen_header = 1
+        elif line.startswith("#"):
+            pass
         else:
             lines = line.strip().split("\t")
             #Check if not Qualifier, if so skip
@@ -27,7 +27,7 @@ with open(hpo, 'r') as hpo_h:
             my_decipher_name = ""
             #Check if dealing with phenotypic abnormality only
             if lines[headers.index("Aspect")] == "P":
-                db = lines[headers.index("DatabaseID")]
+                db = lines[headers.index("#DatabaseID")]
                 hpo_term = lines[headers.index("HPO_ID")].replace("HP:", "")
                 if db.startswith("OMIM:"):
                     #Extract OMIM ID
