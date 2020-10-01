@@ -12,7 +12,7 @@ all_cna = []
 all_omim = []
 
 #Get Orphanumber
-for ona in soup.find_all('orphanumber'):
+for ona in soup.find_all('orphacode'):
 	my_p = ona.parent.find_all('expertlink')
 	if my_p:
 		all_ona.append(ona.get_text())
