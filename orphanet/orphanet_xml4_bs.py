@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from collections import defaultdict as dd
 import re 
 # Make our soup
-with open('en_product4_HPO.xml', 'rb') as infile:
+with open('en_product4.xml', 'rb') as infile:
     blob = infile.read()
 soup = BeautifulSoup(blob, 'lxml')
 
@@ -11,7 +11,7 @@ soup = BeautifulSoup(blob, 'lxml')
 all_ona = dd(list)
 
 for gna in soup.find_all(re.compile("^disorder$"), recursive=True):
-	for ona in gna.find('orphanumber'):
+	for ona in gna.find('orphacode'):
 		full_tag = ona.parent
 		c = full_tag.find_next_sibling('name')
 		name = c.get_text()
