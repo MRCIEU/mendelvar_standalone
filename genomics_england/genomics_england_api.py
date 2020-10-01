@@ -16,6 +16,7 @@ args = ap.parse_args()
 
 new_disease_mim = set()
 
+
 #Get gene ENGS id = omim_gene id relationships
 #Also gene symbol = omim_gene id relationships
 gene_ids_omim = dict()
@@ -101,7 +102,7 @@ def check_gene_mim_exists(gene_mim):
     if gene_mim == "NA":
         return gene_mim
     elif gene_mim not in gene_omim:
-        print ("Ooops, MIM gene id %s not present in OMIM!" % gene_mim) 
+        print ("Ooops, MIM gene id %s not present in OMIM!" % gene_mim) #Check passed
         return "NA"
     else:
         return gene_mim
@@ -139,6 +140,9 @@ def parse_json(response_dict, results_dict, new_disease_mim, success, failure):
     #Mim number match
     mim_no = r".*(\d{6}).*"
     for gene in response_dict["results"]:
+        pheno = gene.get("phenotypes", None)
+        if not pheno:
+            continue
         omim_gene = gene["gene_data"].get("omim_gene", None)
         if omim_gene != None:
             omim_gene = omim_gene[0]
@@ -146,8 +150,13 @@ def parse_json(response_dict, results_dict, new_disease_mim, success, failure):
         else:
             omim_gene = "NA"
 
-        hgnc_symbol = gene["gene_data"].get("hgnc_symbol", "NA")
-        hgnc_id =  gene["gene_data"].get("hgnc_id", "NA").replace("HGNC:", "")
+        hgnc_symbol = gene["gene_data"].get("hgnc_symbol", None)
+        hgnc_id =  gene["gene_data"].get("hgnc_id", "NA")
+        if hgnc_id != None:
+            hgnc_id = hgnc_id.replace("HGNC:", "")
+        else:
+            hgnc_id = "NA"
+    
         ensg_37 = gene["gene_data"]["ensembl_genes"].get("GRch37", "NA")
         if ensg_37 != "NA":
             ensg_37 = ensg_37["82"]["ensembl_id"]
@@ -162,7 +171,6 @@ def parse_json(response_dict, results_dict, new_disease_mim, success, failure):
             else:
                 failure += 1
         cf = gene.get("confidence_level", "NA")
-        pheno = gene.get("phenotypes", "NA")
         for my_p in pheno:
             #Ignore phenotypes described only by MONDO or ORPHA terms (only 37 of those, and
             #mostly matching Joubert and Meckel syndrome, each of which has already >15 genes assigned)
@@ -192,6 +200,7 @@ def parse_json(response_dict, results_dict, new_disease_mim, success, failure):
                     results_dict[my_mim_id][hgnc_id]["status"] = cf
                     results_dict[my_mim_id][hgnc_id]["omim_gene"] = omim_gene
                     results_dict[my_mim_id][hgnc_id]["hgnc_symbol"] = hgnc_symbol
+                    #results_dict[my_mim_id][hgnc_id]["gene_symbol"] = gene_symbol
                     results_dict[my_mim_id][hgnc_id]["ensg_37"] = ensg_37
                     results_dict[my_mim_id][hgnc_id]["ensg_38"] = ensg_38
                     results_dict[my_mim_id][hgnc_id]["my_mim_name"] = my_mim_name
