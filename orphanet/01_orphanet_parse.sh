@@ -4,36 +4,23 @@ set -o pipefail
 set -u
 
 analysis=$HOME/MendelVar/orphanet
-scripts=$HOME/bin/mendelvar_standalone/orphanet
-omim_scripts=$HOME/bin/mendelvar_standalone/omim
+scripts=$HOME/bin/MendelVar_production/orphanet
+omim_scripts=$HOME/bin/MendelVar_production/omim
 omim=$HOME/MendelVar/omim
-
-mkdir -p $analysis
 
 cd $analysis
 
 #Rare diseases and cross referencing
 curl -O http://www.orphadata.org/data/xml/en_product1.xml
-curl -O http://www.orphadata.org/cgi-bin/img/fair/product1_xsd_valid.xsd
-mv product1_xsd_valid.xsd en_product1.xsd
 
 #LINEARISATION OF DISORDERS
 curl -O http://www.orphadata.org/data/xml/en_product7.xml
-curl -O http://www.orphadata.org/cgi-bin/img/fair/product7_19022018.xsd
-mv product7_19022018.xsd en_product7.xsd
 
 #RARE DISEASES WITH THEIR ASSOCIATED GENES
 curl -O http://www.orphadata.org/data/xml/en_product6.xml
-curl -O http://www.orphadata.org/cgi-bin/img/fair/produit_6_1902018.xsd 
-mv produit_6_1902018.xsd en_product6.xsd
 
-curl -O http://www.orphadata.org/data/xml/en_product4_HPO.xml
-curl -O http://www.orphadata.org/cgi-bin/img/fair/product4_HPO_07122017.xsd
-mv product4_HPO_07122017.xsd en_product4_HPO.xsd
+curl -O http://www.orphadata.org/data/xml/en_product4.xml
 
-curl -O http://www.orphadata.org/data/xml/en_product4_HPO_status.xml
-curl -O http://www.orphadata.org/cgi-bin/img/fair/Product4_HPOstatus_29122018.xsd
-mv Product4_HPOstatus_29122018.xsd en_product4_HPO_status.xsd
 
 #Disease info
 python $scripts/orphanet_xml1_bs.py >orphanet_xml1_parsed
@@ -69,17 +56,18 @@ python $omim_scripts/remove_present_in_omim.py \
 --other_disease omim_disease_id \
 --pheno_series $omim/phenotype_series2.json >orphanet_all_parsed_present_omim_unique.txt
 
-#Number of genes unique to Orphanet
+#Around 1679 OMIM-independent gene-disease associations (counting those that have both gene and disease MIM), 
+#202 of which have "Not yet assessed" status.
+#Around 489 of unique genes (not present in OMIM) among all associations 
 cat orphanet_all_parsed2_all.txt | cut -f6 | sort | uniq >orphanet_genes
 cat $omim/all_omim_database.txt | cut -f5 | sort | uniq >omim_genes
 comm -23 orphanet_genes omim_genes >orphanet_unique
 
 ###STATS ONLY USAGE
+
 #disease mim present
 awk -F "\t" -v OFS="\t" '($2 != "NA") {print $0}' orphanet_all_parsed_corrected.txt >orphanet_disease_parsed_present_omim.txt
 
-#Compare HPO term sets present in Orphanet to the ones in OMIM.
-#See if any additional ones present.
 python $omim_scripts/additional_hpo_terms.py \
 --omim $omim/all_omim_database.txt \
 --other orphanet_disease_parsed_present_omim.txt \
@@ -90,3 +78,4 @@ python $omim_scripts/additional_hpo_terms.py \
 --pheno_series $omim/phenotype_series2.json \
 --output orphanet_hpo_parsed_present_omim_unique.txt
 
+#94838 additional HPO terms spanning 4855 diseases with MIM identifiers found in Orphanet compared to OMIM.
