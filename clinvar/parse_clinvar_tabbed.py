@@ -17,7 +17,7 @@ args = ap.parse_args()
 class Clinvar:
 	empty_field="NA"
 	omim_re = r"OMIM\:(\d+)"
-	orphanet_re = r"Orphanet\:(ORPHA\d+)"
+	orphanet_re = r"Orphanet\:(?:ORPHA)?(\d+)"
 	omim_re_mm = r"(\d+) \(\d\)"
 
 	def __init__(self, args):
@@ -90,6 +90,7 @@ class Clinvar:
 			else:
 				dbsnp_dbvar_id = self.empty_field
 			cyto_location = lines[header.index("Cytogenetic")]
+			#print(cyto_location)
 			if cyto_location == "-":
 				cyto_location = self.empty_field
 			chromosome = lines[header.index("Chromosome")]
@@ -108,8 +109,8 @@ class Clinvar:
 					continue
 			except:
 				continue
-			ref_allele = lines[header.index("ReferenceAllele")]
-			alt_allele = lines[header.index("AlternateAllele")]
+			ref_allele = lines[header.index("ReferenceAlleleVCF")]
+			alt_allele = lines[header.index("AlternateAlleleVCF")]
 			if (ref_allele == "na" or ref_allele == "-"):
 				ref_allele = self.empty_field
 			if (alt_allele == "na" or alt_allele == "-"):
@@ -128,27 +129,40 @@ class Clinvar:
 					pass
 				else:
 					continue
+			#Can be multiple conditions separated by "|":
+			disn = lines[header.index("PhenotypeList")].split("|")
+			disi = lines[header.index("PhenotypeIDS")].split("|")
+			names_output_final = list()
+			omim_output_final = list()
+			orpha_output_final = list()
+			for (a, b) in zip(disn, disi):
 			#can be multiple genes separated by ";"
-			disease_name = lines[header.index("PhenotypeList")].split(";")
-			disease_ids = lines[header.index("PhenotypeIDS")].split(";")
-			names_output = list()
-			omim_output = list()
-			orpha_output = list()
-			for (n, i) in zip(disease_name, disease_ids):
-				#Check for presence of omim id
-				MyResult_omim = re.search(self.omim_re, i)
-				MyResult_orphanet = re.search(self.orphanet_re, i)
-				omim_id = MyResult_omim.group(1) if MyResult_omim else self.empty_field
-				orphanet_id = MyResult_orphanet.group(1) if MyResult_orphanet else self.empty_field
-				#Check if we can assign omim ID ourselves it is missing from the ClinVar file.
-				if omim_id == self.empty_field:
-					omim_id = self.add_omim_phenotype(n)
-				names_output.append(n)
-				omim_output.append(omim_id)
-				orpha_output.append(orphanet_id)
-			names_output = ";".join(names_output)	
-			omim_output = ";".join(omim_output)	
-			orpha_output = ";".join(orpha_output)	
+				disease_name = a.split(";")
+				disease_ids = b.split(";")
+				names_output = list()
+				omim_output = list()
+				orpha_output = list()
+				for (n, i) in zip(disease_name, disease_ids):
+					#Check for presence of omim id
+					MyResult_omim = re.search(self.omim_re, i)
+					MyResult_orphanet = re.search(self.orphanet_re, i)
+					omim_id = MyResult_omim.group(1) if MyResult_omim else self.empty_field
+					orphanet_id = MyResult_orphanet.group(1) if MyResult_orphanet else self.empty_field
+					#Check if we can assign omim ID ourselves it is missing from the ClinVar file.
+					if omim_id == self.empty_field:
+						omim_id = self.add_omim_phenotype(n)
+					names_output.append(n)
+					omim_output.append(omim_id)
+					orpha_output.append(orphanet_id)
+					names_output1 = ";".join(names_output)	
+					omim_output1 = ";".join(omim_output)	
+					orpha_output1 = ";".join(orpha_output)
+				names_output_final.append(names_output1)
+				omim_output_final.append(omim_output1)
+				orpha_output_final.append(orpha_output1)
+			names_output = "|".join(names_output_final)
+			omim_output = "|".join(omim_output_final)
+			orpha_output = "|".join(orpha_output_final)
 			database_source = "ClinVar"
 			VCV = lines[header.index("VariationID")]
 			database_link = "http://www.ncbi.nlm.nih.gov/clinvar/variation/" + VCV 
