@@ -22,7 +22,7 @@ def process_ldlink_output(response, threshold, col_metric, lines, results, loggi
     my_result = [x for x in my_result if x]
     header = my_result[0].strip().split("\t")
     #If we did not find the correct header indicating that the lookup was successful, terminate and move onto the next position.
-    if header != ['RS_Number', 'Coord', 'Alleles', 'MAF', 'Distance', 'Dprime', 'R2', 'Correlated_Alleles', 'RegulomeDB', 'Function']:
+    if header != ['RS_Number', 'Coord', 'Alleles', 'MAF', 'Distance', 'Dprime', 'R2', 'Correlated_Alleles', 'FORGEdb', 'RegulomeDB', 'Function']:
         logging.write("WARNING: The following position not found in the 1k reference. Skipping the variant: %s\n" % lines[3])
         return results
     #skipping header
